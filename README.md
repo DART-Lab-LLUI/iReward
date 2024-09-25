@@ -1,0 +1,1 @@
+iReward aims at using patient reported emotional responses to pre-defined environmental stimuli to cluster neurological patients into charateristic reward profiles. Through repeated measurements, we aim to track how individual reward profiles change throughout rehabilitation.
