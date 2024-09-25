@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Views.MainActivity"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/AMain_linearLayoutIm"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="20dp"
+            android:layout_weight="1"
+            android:id="@+id/AMain_imCefir"
+            android:src="@drawable/cefir"
+            android:contentDescription="imCefir" />
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="20dp"
+            android:layout_weight="1"
+            android:id="@+id/AMain_imCereneo"
+            android:src="@drawable/cereneo"
+            android:contentDescription="imCereneo" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/AMain_txtScan"
+        style="@style/TextViewTitleBlue"
+        android:text="Let's try to scan a QR code"
+        android:layout_below="@id/AMain_linearLayoutIm"
+        />
+
+    <com.budiyev.android.codescanner.CodeScannerView
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:layout_marginTop="100dp"
+        android:id="@+id/AMain_scanner"
+        android:layout_below="@id/AMain_txtScan"
+        app:autoFocusButtonColor="#fff"
+        app:autoFocusButtonVisible="true"
+        app:flashButtonColor="#fff"
+        app:flashButtonVisible="true"
+        app:maskColor="@color/colorPrimary"
+        />
+
+</RelativeLayout>

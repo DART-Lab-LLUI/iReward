@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Views.NoteActivity"
+    android:background="@color/white">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/ANote_txt7points"
+        android:text="On a 7 points scale,"
+        style="@style/TextViewTitleBlue"
+        android:layout_marginTop="150dp"
+        android:layout_centerHorizontal="true"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="How much do you like this picture ?"
+        style="@style/TextViewTitleBlue"
+        android:layout_below="@id/ANote_txt7points"
+        android:layout_centerHorizontal="true"/>
+
+    <ImageView
+        android:id="@+id/ANote_imNote"
+        android:layout_width="500dp"
+        android:layout_height="500dp"
+        android:layout_centerInParent="true"
+        android:src="@drawable/ic_launcher_background" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/ANote_txtNote"
+        android:text="Rating : "
+        style="@style/TextView"
+        android:layout_marginTop="20dp"
+        android:layout_below="@id/ANote_imNote"/>
+
+    <SeekBar
+        android:id="@+id/ANote_seekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ANote_txtNote"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="30dp"
+        android:max="7"
+        android:min="1"
+        android:progress="3"
+        android:progressDrawable="@drawable/progress_drawable"
+        android:progressTint="@color/colorPrimary"
+        android:splitTrack="false"
+        android:thumb="@drawable/thumb_size"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/ANote_btnSubmit"
+        style="@style/TextView"
+        android:visibility="invisible"
+        android:layout_width="300dp"
+        android:layout_height="80dp"
+        android:layout_below="@id/ANote_seekBar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/bg_button"
+        android:text="Submit" />
+
+
+</RelativeLayout>
