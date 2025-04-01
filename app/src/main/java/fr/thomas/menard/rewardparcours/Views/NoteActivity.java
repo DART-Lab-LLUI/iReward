@@ -1,16 +1,11 @@
 package fr.thomas.menard.rewardparcours.Views;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.SeekBar;
-import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -20,42 +15,25 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.thomas.menard.rewardparcours.BaseActivtiy.BaseActivity;
+import fr.thomas.menard.rewardparcours.DataUploadUtils.FileManager;
+import fr.thomas.menard.rewardparcours.Model.Patient;
 import fr.thomas.menard.rewardparcours.R;
 import fr.thomas.menard.rewardparcours.databinding.ActivityNoteBinding;
 
-public class NoteActivity extends AppCompatActivity {
+public class NoteActivity extends BaseActivity {
 
-    private String patientID, caseID, date, note;
-    int pictureID;
+    private String note;
+    private int pictureID;
 
     ActivityNoteBinding binding;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivityNoteBinding.inflate(LayoutInflater.from(this));
-        setContentView(binding.getRoot());
-
-        init();
-        listenSeekBar();
-        listenBtnSubmit();
-        displayPic(pictureID);
-    }
-
-    private void init(){
-        Intent intent = getIntent();
-        caseID = intent.getStringExtra("caseID");
-        patientID = intent.getStringExtra("patientID");
-        date = intent.getStringExtra("date");
-        pictureID = intent.getIntExtra("pictureID", 0);
-    }
 
     private void listenSeekBar(){
         binding.ANoteSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 binding.ANoteBtnSubmit.setVisibility(View.VISIBLE);
-                binding.ANoteTxtNote.setText("Rating : " + String.valueOf(progress));
+                binding.ANoteTxtNote.setText("Rating : " + progress);
                 note = String.valueOf(progress);
             }
 
@@ -169,23 +147,15 @@ public class NoteActivity extends AppCompatActivity {
         }
     }
 
-    private void confirmVote(String mark){
+    private void confirmVote(){
         new AlertDialog.Builder(this)
                 .setTitle("Confirm your mark")
-                .setMessage("Are you sure to give " + mark + " points to this picture ?")
-                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        modifyCSV(pictureID, mark,
-                                getExternalFilesDir(null).getAbsolutePath() + "/"+patientID+"/"+patientID+"_score.csv");
+                .setMessage("Are you sure to give " + note + " points to this picture ?")
+                .setPositiveButton("YES", (dialog, which) -> {
+                    modifyCSV(pictureID, note,
+                            FileManager.getScoreFilename(this, Patient.getPatient()));
 
-                        Intent intent = new Intent(getApplicationContext(), SummaryActivity.class);
-                        intent.putExtra("patientID", patientID);
-                        intent.putExtra("caseID", caseID);
-                        intent.putExtra("date", date);
-                        startActivity(intent);
-
-                    }
+                    navigateToNextActivity(SummaryActivity.class);
                 })
                 .setNegativeButton("NO", null)
                 .create().show();
@@ -193,12 +163,7 @@ public class NoteActivity extends AppCompatActivity {
 
 
     private void listenBtnSubmit(){
-        binding.ANoteBtnSubmit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                confirmVote(note);
-            }
-        });
+        binding.ANoteBtnSubmit.setOnClickListener(view -> confirmVote());
     }
 
     private void modifyCSV(int rowposition, String newValue, String filePath){
@@ -249,5 +214,28 @@ public class NoteActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void init() {
+        displayPic(pictureID);
+    }
+
+    @Override
+    public void listenBtn() {
+        listenSeekBar();
+        listenBtnSubmit();
+    }
+
+    @Override
+    public void setBinding() {
+        binding = ActivityNoteBinding.inflate(LayoutInflater.from(this));
+        setContentView(binding.getRoot());
+    }
+
+    @Override
+    public void processReceivedIntent(Intent intent) {
+        super.processReceivedIntent(intent);
+        pictureID = intent.getIntExtra("pictureID", 0);
     }
 }

@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.thomas.menard.rewardparcours.Model.Patient;
+
 public class WriteCSV extends ViewModel {
 
     public static WriteCSV getInstance(@NonNull ViewModelStoreOwner owner) {
@@ -21,10 +23,9 @@ public class WriteCSV extends ViewModel {
     }
 
 
-    public void createAndWriteCSV(String filePath, String patientID, String caseId, String time) {
-
-
+    public void createAndWriteCSV(String filePath, String patientID, String caseId, String time, String clinicId) {
         File file = new File(filePath);
+        DebugLogger.debugLog("filePath : " + filePath);
 
         try {
             // create FileWriter object with file as parameter
@@ -37,8 +38,8 @@ public class WriteCSV extends ViewModel {
                     CSVWriter.DEFAULT_LINE_END);
 
             List<String[]> summ = new ArrayList<String[]>();
-            summ.add(new String[] { "Patient_ID", "Case_ID", "Time"});
-            summ.add(new String[] { patientID, caseId, time});
+            summ.add(new String[] { "Patient_ID", "Case_ID", "Time", "Clinic_ID"});
+            summ.add(new String[] { patientID, caseId, time, clinicId });
             summ.add(new String[]{});
             summ.add(new String[] { "Number","Categorie", "Score"});
             summ.add(new String[] { "Picture 1","Music", "Nan"});
@@ -72,6 +73,7 @@ public class WriteCSV extends ViewModel {
             summ.add(new String[] { "Picture 29","Luxury", "Nan"});
             summ.add(new String[] { "Picture 30","Music", "Nan"});
             writer.writeAll(summ);
+            DebugLogger.debugLog("filePath : " + summ);
 
             // closing writer connection
             writer.close();

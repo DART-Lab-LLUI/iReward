@@ -1,17 +1,12 @@
 package fr.thomas.menard.rewardparcours.Views;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.graphics.Color;
-import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
-
-import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
@@ -24,45 +19,20 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
+import fr.thomas.menard.rewardparcours.BaseActivtiy.BaseActivity;
+import fr.thomas.menard.rewardparcours.DataUploadUtils.DataTransfer;
+import fr.thomas.menard.rewardparcours.DataUploadUtils.FileManager;
+import fr.thomas.menard.rewardparcours.Model.Patient;
 import fr.thomas.menard.rewardparcours.R;
 import fr.thomas.menard.rewardparcours.Utils.SFTP;
 import fr.thomas.menard.rewardparcours.databinding.ActivitySummaryBinding;
 
-public class SummaryActivity extends AppCompatActivity {
+public class SummaryActivity extends BaseActivity {
 
-    ActivitySummaryBinding binding;
-    String patientID, caseID, date;
-    int numberPicRated = 0;
-
-    File folderSRC;
-    String PATH_SERVER;
-    private static final String host = "172.20.11.10";
-    private static final int port = 22;
-    private static final String user = "lli_admin";
-    private static final String password = "0YVjglmuevOh";
-
+    private ActivitySummaryBinding binding;
+    private int numberPicRated = 0;
     private static final int total_pic = 30;
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivitySummaryBinding.inflate(LayoutInflater.from(this));
-        setContentView(binding.getRoot());
-
-        init();
-        NbPictureRated();
-        diplayChart();
-        listenBtnScan();
-        checkUpload();
-    }
-
-    private void init(){
-        Intent intent = getIntent();
-        caseID = intent.getStringExtra("caseID");
-        patientID = intent.getStringExtra("patientID");
-        date = intent.getStringExtra("date");
-    }
 
     private void diplayChart(){
         ArrayList<PieEntry> entries = new ArrayList<>();
@@ -95,28 +65,17 @@ public class SummaryActivity extends AppCompatActivity {
         data.setValueTextColor(getResources().getColor(R.color.white));
         binding.pieChart.setData(data);
         binding.pieChart.invalidate();
-
-
-
     }
 
     private void listenBtnScan(){
-        binding.btnScanAnother.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                intent.putExtra("patientID", patientID);
-                intent.putExtra("caseID", caseID);
-                intent.putExtra("date", date);
-                startActivity(intent);
-            }
+        binding.btnScanAnother.setOnClickListener(view -> {
+            navigateToNextActivity(MainActivity.class);
         });
     }
 
     @SuppressLint("SetTextI18n")
     private void NbPictureRated(){
-        String filePath = getExternalFilesDir(null).getAbsolutePath() + "/"+patientID+"/"+patientID+"_score.csv";
-        List<String[]> data = new ArrayList<>();
+        String filePath = FileManager.getScoreFilename(this, Patient.getPatient());
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
@@ -135,38 +94,47 @@ public class SummaryActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        binding.txtNumberPic.setText(String.valueOf(numberPicRated) + " / " + total_pic+" pictures");
-
+        binding.txtNumberPic.setText(numberPicRated + " / " + total_pic+" pictures");
     }
 
     private void checkUpload(){
         if(numberPicRated==30){
             binding.PBUpload.setVisibility(View.VISIBLE);
             binding.btnScanAnother.setVisibility(View.GONE);
-            uploadData(patientID+"_score.csv");
+            uploadData();
         }
     }
 
-    private void uploadData(String file){
-        folderSRC = new File(getExternalFilesDir(null).getAbsolutePath() + "/"+patientID);
-        PATH_SERVER = "data/raw_data/" + patientID + "/reward_path/" + date + "/";
-        String file_to_send = folderSRC + "/" + file;
-        
-        SFTP sftp = new SFTP();
-        sftp.connect(host, user, password, port, file_to_send, PATH_SERVER, success -> {
-            if (success) {
-                Log.d("TEST", "File uploaded successfully");
-                binding.PBUpload.setVisibility(View.GONE);
-                binding.linearUploadDone.setVisibility(View.VISIBLE);
+    private void uploadData(){
+        binding.PBUpload.post(() -> {
+            binding.PBUpload.setVisibility(View.VISIBLE);
+            binding.btnScanAnother.setVisibility(View.GONE);
 
-            } else {
-                Log.d("TEST", "File upload failed");
-                binding.PBUpload.setVisibility(View.GONE);
-                binding.linearUploadFailed.setVisibility(View.VISIBLE);
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                DataTransfer dataTransfer = new DataTransfer(patientInfo, this, IdentificationActivity.class,
+                        () -> runOnUiThread(() -> binding.PBUpload.setVisibility(View.INVISIBLE)) // Hide progress when done
+                );
 
-
-            }
+                dataTransfer.uploadData();
+            }, 100);
         });
+    }
 
+    @Override
+    public void init() {
+        NbPictureRated();
+        diplayChart();
+        checkUpload();
+    }
+
+    @Override
+    public void listenBtn() {
+        listenBtnScan();
+    }
+
+    @Override
+    public void setBinding() {
+        binding = ActivitySummaryBinding.inflate(LayoutInflater.from(this));
+        setContentView(binding.getRoot());
     }
 }

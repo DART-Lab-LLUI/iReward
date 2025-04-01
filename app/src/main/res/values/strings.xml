@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">iReward</string>
+
+    <string name="clinic_id">Clinic Id</string>
+    <string-array name="clinic_names">
+        <item>Cereneo Herstenstein</item>
+        <item>Cereneo Park Hotel VZ</item>
+    </string-array>
 </resources>

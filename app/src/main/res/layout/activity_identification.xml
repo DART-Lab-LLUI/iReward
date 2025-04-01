@@ -6,13 +6,39 @@
     android:layout_height="match_parent"
     tools:context=".Views.IdentificationActivity">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/AMain_linearLayoutIm"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="20dp"
+            android:layout_weight="1"
+            android:id="@+id/AMain_imCefir"
+            android:src="@drawable/cefir"
+            android:contentDescription="imCefir" />
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="20dp"
+            android:layout_weight="1"
+            android:id="@+id/AMain_imCereneo"
+            android:src="@drawable/cereneo"
+            android:contentDescription="imCereneo" />
+
+    </LinearLayout>
+
+
     <TextView
         android:id="@+id/txtWelcome"
         style="@style/Titleblue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="200dp"
+        android:layout_below="@id/AMain_linearLayoutIm"
         android:padding="20dp"
         android:textSize="35sp"
         android:text="Welcome to the reward parcours"/>
@@ -52,6 +78,30 @@
             android:textSize="20sp"
             android:hint="Case ID"
             android:inputType="phone" />
+
+        <RelativeLayout
+            android:id="@+id/clinicSelectionWrapper"
+            android:layout_below="@id/APatient_tilCaseId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:layout_marginHorizontal="25dp">
+
+            <TextView
+                android:id="@+id/clinicIdTxt"
+                style="@style/Titleblue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/clinic_id" />
+
+            <Spinner
+                android:id="@+id/clinicIdSpinner"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/clinicIdTxt"
+                tools:listitem="@layout/item_spinner"/>
+        </RelativeLayout>
     </com.google.android.material.textfield.TextInputLayout>
 
 

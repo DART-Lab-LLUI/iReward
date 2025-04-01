@@ -22,26 +22,21 @@ import com.opencsv.exceptions.CsvException;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
+import fr.thomas.menard.rewardparcours.BaseActivtiy.BaseActivity;
+import fr.thomas.menard.rewardparcours.DataUploadUtils.FileManager;
+import fr.thomas.menard.rewardparcours.Model.Patient;
 import fr.thomas.menard.rewardparcours.R;
+import fr.thomas.menard.rewardparcours.Utils.DebugLogger;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     CodeScannerView scannerView;
-
     private CodeScanner codeScanner;
-    private int CAMERA_PERMISSION_CODE = 1;
-    String patientID, caseID, date, categorie;
+    private int pictureID;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        inits();
-        checkPermissions();
-    }
 
     private void checkPermissions(){
         if(ContextCompat.checkSelfPermission(getApplicationContext(),
@@ -53,27 +48,17 @@ public class MainActivity extends AppCompatActivity {
     private void inits(){
         scannerView = findViewById(R.id.AMain_scanner);
         codeScanner = new CodeScanner(getApplicationContext(), scannerView);
-
-        Intent intent = getIntent();
-        caseID = intent.getStringExtra("caseID");
-        patientID = intent.getStringExtra("patientID");
-        date = intent.getStringExtra("date");
     }
 
     private void scanCode(){
         codeScanner.setDecodeCallback(result -> runOnUiThread(() -> {
             String numberPart = String.valueOf(result).replace("picture", "");
-            int pictureID = Integer.parseInt(numberPart);
+            pictureID = Integer.parseInt(numberPart);
+            DebugLogger.debugLog(numberPart + " " + pictureID);
             if(checkPicRated(pictureID)){
                 popupAlreadyScanned();
             }else{
-                Intent intent = new Intent(getApplicationContext(), NoteActivity.class);
-                intent.putExtra("patientID", patientID);
-                intent.putExtra("caseID", caseID);
-                intent.putExtra("date", date);
-                intent.putExtra("pictureID", pictureID);
-                startActivity(intent);
-                finish();
+                navigateToNextActivity(NoteActivity.class);
             }
 
         }));
@@ -81,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean checkPicRated(int pic){
-        String score_csv_path = getExternalFilesDir(null).getAbsolutePath() + "/"+patientID+"/"+patientID+"_score.csv";
+        String score_csv_path = FileManager.getScoreFilename(this, Patient.getPatient());
 
         try {
             CSVParser csvParser = new CSVParserBuilder().withSeparator(';').build();
@@ -103,9 +88,6 @@ public class MainActivity extends AppCompatActivity {
             else
                 return true;
 
-
-
-
         } catch (IOException | CsvException e) {
             Log.d("TEST", "infos " + e.getMessage());
             e.printStackTrace();
@@ -117,17 +99,9 @@ public class MainActivity extends AppCompatActivity {
     private void popupAlreadyScanned(){
         new AlertDialog.Builder(this)
                 .setTitle("Picture already marked")
-                .setMessage("You have already scanned this picture. Please scan antoher QR code")
-                .setPositiveButton("GET IT", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        intent.putExtra("patientID", patientID);
-                        intent.putExtra("caseID", caseID);
-                        intent.putExtra("date", date);
-                        startActivity(intent);
-                        finish();
-                    }
+                .setMessage("You have already scanned this picture. Please scan another QR code")
+                .setPositiveButton("GET IT", (dialog, which) -> {
+                    navigateToNextActivity(MainActivity.class);
                 })
                 .create().show();
     }
@@ -142,5 +116,27 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         codeScanner.releaseResources();
         super.onStop();
+    }
+
+    @Override
+    public void init() {
+        inits();
+        checkPermissions();
+    }
+
+    @Override
+    public void listenBtn() {
+
+    }
+
+    @Override
+    public void setBinding() {
+        setContentView(R.layout.activity_main);
+    }
+
+    @Override
+    public void prepareIntent(Intent intent) {
+        super.prepareIntent(intent);
+        intent.putExtra("pictureID", pictureID);
     }
 }
