@@ -56,6 +56,17 @@ public class FileManager {
         return new File(getSessionFolder(context, patient), filename);
     }
 
+    public static File getOldScoreFile(Context context, Patient patient, String oldDate){
+        File baseDir = context.getExternalFilesDir(null);
+
+        // Construct the patient-case directory path
+        File caseDir = createFolder(baseDir,patient.getCaseId());
+        File dateDir = createFolder(caseDir, oldDate);
+        File scoreDir = createFolder(dateDir, "raw_data");
+        String filename = patient.getPatientId() + "_score.csv";
+        return new File(scoreDir, filename);
+    }
+
     public static String getScoreFilename(Context context, Patient patient){
         return getFilename(getScoreFile(context, patient));
     }

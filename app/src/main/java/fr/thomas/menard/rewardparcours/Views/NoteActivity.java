@@ -1,5 +1,7 @@
 package fr.thomas.menard.rewardparcours.Views;
 
+import static fr.thomas.menard.rewardparcours.Utils.ReadCSV.readCSV;
+
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.util.Log;
@@ -186,22 +188,6 @@ public class NoteActivity extends BaseActivity {
 
         // Écrire la structure de données modifiée dans le fichier CSV
         writeCSV(data, filePath);
-    }
-
-    private static List<String[]> readCSV(String filePath) {
-        List<String[]> data = new ArrayList<>();
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] row = line.split(";");
-                data.add(row);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return data;
     }
 
     private static void writeCSV(List<String[]> data, String filePath) {

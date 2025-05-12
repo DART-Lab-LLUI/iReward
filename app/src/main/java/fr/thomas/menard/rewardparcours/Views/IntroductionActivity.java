@@ -3,15 +3,19 @@ package fr.thomas.menard.rewardparcours.Views;
 import android.app.AlertDialog;
 import android.view.LayoutInflater;
 
+import com.opencsv.CSVReader;
+
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import fr.thomas.menard.rewardparcours.BaseActivtiy.BaseActivity;
 import fr.thomas.menard.rewardparcours.DataUploadUtils.FileManager;
-import fr.thomas.menard.rewardparcours.R;
+import fr.thomas.menard.rewardparcours.Model.Patient;
+import fr.thomas.menard.rewardparcours.Utils.ReadCSV;
 import fr.thomas.menard.rewardparcours.Utils.WriteCSV;
 import fr.thomas.menard.rewardparcours.databinding.ActivityIntroductionBinding;
 
@@ -42,8 +46,12 @@ public class IntroductionActivity extends BaseActivity {
                     .setTitle("Continue last session?")
                     .setMessage("Do you want to continue the last session from " + formatDate(newestDate) + "?")
                     .setPositiveButton("Yes", (dialog, which) -> {
-                        patientInfo.setDate(newestDate);
-                        navigateToNextActivity(PermissionsActivity.class);
+                        if(checkIfSessionUncompleted(newestDate)){
+                            patientInfo.setDate(newestDate);
+                            navigateToNextActivity(PermissionsActivity.class);
+                        } else {
+                            showNewSessionAlert();
+                        }
                     })
                     .setNegativeButton("No", (dialog, which) -> {
                         createNewSession();
@@ -54,6 +62,35 @@ public class IntroductionActivity extends BaseActivity {
         } else {
             createNewSession();
         }
+    }
+
+    private void showNewSessionAlert(){
+        new AlertDialog.Builder(this)
+                .setTitle("Previous Session is already fully completed")
+                .setMessage("The last session should be already uploaded. A new session will be created.")
+                .setPositiveButton("Ok", (dialog, which) -> createNewSession())
+                .setCancelable(false)
+                .show();
+    }
+
+    private boolean checkIfSessionUncompleted(String sessionDate){
+        File scoreFile = FileManager.getOldScoreFile(this, patientInfo, sessionDate);
+
+        if (scoreFile.exists()){
+            List<String[]> readCSV = ReadCSV.readCSV(scoreFile.getAbsolutePath());
+            int scoreColIndex = 2;
+            for (String[] row : readCSV) {
+                if(row.length > scoreColIndex && noScoreValue(row, scoreColIndex)){
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private boolean noScoreValue(String[] row, int scoreColIndex){
+        return row[scoreColIndex].isEmpty() || row[scoreColIndex].equalsIgnoreCase("NaN");
     }
 
     private String formatDate(String date){
