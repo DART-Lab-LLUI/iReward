@@ -81,5 +81,7 @@ public class Patient {
         return "PID: " + patientId + "; CID: " + caseId  + " " + getFormattedDate();
     }
 
-
+    public void setDate(String date) {
+        this.date = date;
+    }
 }

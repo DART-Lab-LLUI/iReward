@@ -19,6 +19,11 @@ public class FileManager {
         return directory;
     }
 
+    public static File getCaseIDFolder(Context context, Patient patient){
+        String filename = patient.getCaseId();
+        return new File(context.getExternalFilesDir(null), filename);
+    }
+
     private static String getFilename(File file){
         return file.getAbsolutePath();
     }

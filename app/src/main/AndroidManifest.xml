@@ -10,6 +10,9 @@
     <uses-feature
         android:name="android.hardware.Camera"
         android:required="true" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
     <application
         android:name=".App.MyApplication"
