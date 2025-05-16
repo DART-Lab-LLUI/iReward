@@ -12,46 +12,45 @@ import fr.thomas.menard.rewardparcours.Utils.DebugLogger;
 import io.minio.BucketExistsArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+import io.minio.errors.ErrorResponseException;
+import io.minio.errors.InsufficientDataException;
+import io.minio.errors.InternalException;
+import io.minio.errors.InvalidResponseException;
 import io.minio.errors.MinioException;
+import io.minio.errors.ServerException;
+import io.minio.errors.XmlParserException;
 
 public class MinioHelper {
     private static final String APPNAME = "ireward";
     private MinioClient minioClient;
     private final String MINIO_ENDPOINT, MINIO_ACCESS, MINIO_SECRET, MINIO_BUCKET;
 
-    public MinioHelper(String endpoint, String access, String secret, String bucket) {
+    public MinioHelper(String endpoint, String access, String secret, String bucket) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
 
         this.MINIO_ENDPOINT = endpoint;
         this.MINIO_ACCESS = access;
         this.MINIO_SECRET = secret;
         this.MINIO_BUCKET = bucket;
 
-        // Create a MinioClient object with the MinIO server URL, access key, and secret key
-        try {
-            // Initialize the MinIO client
-            minioClient = MinioClient.builder()
-                    .endpoint(MINIO_ENDPOINT)
-                    .credentials(MINIO_ACCESS, MINIO_SECRET)
-                    .build();
+        // Initialize the MinIO client
+        minioClient = MinioClient.builder()
+                .endpoint(MINIO_ENDPOINT)
+                .credentials(MINIO_ACCESS, MINIO_SECRET)
+                .build();
 
-            if (minioClient != null) {
-                DebugLogger.debugLog("MINIOTEST","MinioClient initialized successfully.");
-            } else {
-                DebugLogger.debugLog("MINIOTEST","Failed to initialize MinioClient.");
-            } 
+        if (minioClient != null) {
+            DebugLogger.debugLog("MINIOTEST","MinioClient initialized successfully.");
+        } else {
+            DebugLogger.debugLog("MINIOTEST","Failed to initialize MinioClient.");
+        }
 
-            // Check if bucket exists
-            DebugLogger.debugLog("MINIOTEST", "Checking if landingzone bucket exists");
-            boolean found = minioClient.bucketExists(BucketExistsArgs.builder().bucket(MINIO_BUCKET).build());
-            if (found) {
-                DebugLogger.debugLog("MINIOTEST", "MinIO client built successfully! Bucket exists.");
-            } else {
-                DebugLogger.debugLog("MINIOTEST", "Bucket not found, but MinIO client is working.");
-            }
-        } catch (MinioException | InvalidKeyException | IOException | NoSuchAlgorithmException e) {
-            DebugLogger.debugLog( "MINIOTEST", "Error building MinioClient or connecting to MinIO server.");
-            DebugLogger.debugLog("MINIOTEST", e.getMessage());
-            e.printStackTrace();
+        // Check if bucket exists
+        DebugLogger.debugLog("MINIOTEST", "Checking if landingzone bucket exists");
+        boolean found = minioClient.bucketExists(BucketExistsArgs.builder().bucket(MINIO_BUCKET).build());
+        if (found) {
+            DebugLogger.debugLog("MINIOTEST", "MinIO client built successfully! Bucket exists.");
+        } else {
+            DebugLogger.debugLog("MINIOTEST", "Bucket not found, but MinIO client is working.");
         }
     }
 

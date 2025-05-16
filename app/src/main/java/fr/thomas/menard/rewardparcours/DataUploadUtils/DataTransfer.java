@@ -1,6 +1,5 @@
 package fr.thomas.menard.rewardparcours.DataUploadUtils;
 
-import static fr.thomas.menard.rewardparcours.BuildConfig.*;
 import static fr.thomas.menard.rewardparcours.BuildConfig.MINIO_HS_ACCESS;
 import static fr.thomas.menard.rewardparcours.BuildConfig.MINIO_HS_BUCKET;
 import static fr.thomas.menard.rewardparcours.BuildConfig.MINIO_HS_ENDPOINT;
@@ -34,13 +33,17 @@ public class DataTransfer {
         this.nextActivity = nextActivity;
         this.callback = callback;
 
-        switch (patientInfo.getClinicId()){
-            case 0:
-                this.minioHelper = new MinioHelper(MINIO_VZ_ENDPOINT, MINIO_VZ_ACCESS, MINIO_VZ_SECRET, MINIO_VZ_BUCKET);
-                break;
-            case 1:
-                this.minioHelper = new MinioHelper(MINIO_HS_ENDPOINT, MINIO_HS_ACCESS, MINIO_HS_SECRET, MINIO_HS_BUCKET);
-                break;
+        try{
+            switch (patientInfo.getClinicId()){
+                case 0:
+                    this.minioHelper = new MinioHelper(MINIO_HS_ENDPOINT, MINIO_HS_ACCESS, MINIO_HS_SECRET, MINIO_HS_BUCKET);
+                    break;
+                case 1:
+                    this.minioHelper = new MinioHelper(MINIO_VZ_ENDPOINT, MINIO_VZ_ACCESS, MINIO_VZ_SECRET, MINIO_VZ_BUCKET);
+                    break;
+            }
+        } catch (Exception e){
+            tryAgainMessage(e);
         }
     }
 
