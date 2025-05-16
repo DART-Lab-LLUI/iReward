@@ -98,15 +98,18 @@ public class SummaryActivity extends BaseActivity {
     }
 
     private void checkUpload(){
-        if(numberPicRated==30){
-            binding.PBUpload.setVisibility(View.VISIBLE);
-            binding.btnScanAnother.setVisibility(View.GONE);
-            uploadData();
+        if (numberPicRated == 30) {
+            runOnUiThread(() -> {
+                binding.PBUpload.setVisibility(View.VISIBLE);
+                binding.btnScanAnother.setVisibility(View.GONE);
+                uploadData();
+            });
         }
     }
 
+
     private void uploadData(){
-        binding.PBUpload.post(() -> {
+        runOnUiThread(() -> {
             binding.PBUpload.setVisibility(View.VISIBLE);
             binding.btnScanAnother.setVisibility(View.GONE);
 
@@ -119,6 +122,7 @@ public class SummaryActivity extends BaseActivity {
             }, 100);
         });
     }
+
 
     @Override
     public void init() {
