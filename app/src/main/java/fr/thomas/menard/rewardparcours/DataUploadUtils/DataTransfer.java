@@ -33,17 +33,13 @@ public class DataTransfer {
         this.nextActivity = nextActivity;
         this.callback = callback;
 
-        try{
-            switch (patientInfo.getClinicId()){
-                case 0:
-                    this.minioHelper = new MinioHelper(MINIO_HS_ENDPOINT, MINIO_HS_ACCESS, MINIO_HS_SECRET, MINIO_HS_BUCKET);
-                    break;
-                case 1:
-                    this.minioHelper = new MinioHelper(MINIO_VZ_ENDPOINT, MINIO_VZ_ACCESS, MINIO_VZ_SECRET, MINIO_VZ_BUCKET);
-                    break;
-            }
-        } catch (Exception e){
-            tryAgainMessage(e);
+        switch (patientInfo.getClinicId()){
+            case 0:
+                this.minioHelper = new MinioHelper(MINIO_HS_ENDPOINT, MINIO_HS_ACCESS, MINIO_HS_SECRET, MINIO_HS_BUCKET);
+                break;
+            case 1:
+                this.minioHelper = new MinioHelper(MINIO_VZ_ENDPOINT, MINIO_VZ_ACCESS, MINIO_VZ_SECRET, MINIO_VZ_BUCKET);
+                break;
         }
     }
 
